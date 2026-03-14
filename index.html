@@ -16,16 +16,16 @@
     <p class="subtitle">ESTABLISH YOUR SYNDICATE ALIAS</p>
     
     <div class="input-group">
-      <input type="text" id="alias-input" placeholder="ENTER ALIAS (e.g. viktor)" maxlength="12" autocomplete="off" style="text-align: center; font-size: 24px;">
+      <input type="text" id="alias-input" placeholder="ENTER ALIAS (e.g. viktor)" maxlength="12" autocomplete="off" style="text-align: center; font-size: 20px; border-bottom: 2px solid #00FFFF;">
     </div>
     
     <div class="input-group">
-      <input type="password" id="key-input" placeholder="AUTHORIZATION KEY" autocomplete="off" style="text-align: center; font-size: 16px; letter-spacing: 4px;">
+      <input type="password" id="key-input" placeholder="AUTHORIZATION KEY" autocomplete="off" style="text-align: center; font-size: 14px; letter-spacing: 4px; border-bottom: 2px solid #00FFFF;">
     </div>
     
     <p id="error-message" class="error-text"></p>
     
-    <button id="init-btn" class="btn" style="padding: 20px; margin-top: 10px;">INITIALIZE</button>
+    <button id="init-btn" class="btn" style="margin-top: 10px;">INITIALIZE</button>
   </div>
 
   <!-- MAIN APP CONTAINER -->
@@ -70,7 +70,7 @@
         
         <div id="directives-grid" class="directives-grid"></div>
         
-        <button id="add-master-directive-btn" class="dashed-btn">+ ESTABLISH MASTER DIRECTIVE</button>
+        <button id="add-master-directive-btn" class="dashed-btn"><i class="fa-solid fa-plus" style="margin-right: 8px;"></i> ESTABLISH MASTER DIRECTIVE</button>
       </div>
 
       <!-- DIRECTIVE DETAIL VIEW -->
@@ -95,7 +95,7 @@
         <div id="sub-directives-list" class="list-container"></div>
         
         <div id="add-sub-form" class="hidden" style="border: 1px solid #333; padding: 15px; margin-bottom: 20px; background: #050505;">
-          <select id="sub-type-select" style="width:100%; background:#000; color:#00FFFF; padding:10px; border:1px solid #333; margin-bottom:15px; font-family:monospace;">
+          <select id="sub-type-select" style="width:100%; background:#000; color:#00FFFF; padding:0 10px; height: 50px; border:1px solid #333; margin-bottom:15px; font-family:monospace;">
             <option value="TASK">TASK</option>
             <option value="FINANCE">CAPITAL</option>
             <option value="TIME">HOURS</option>
@@ -104,10 +104,10 @@
           <input type="number" id="sub-target-input" placeholder="TARGET AMOUNT/HOURS..." style="margin-bottom:15px; display:none;">
           
           <div style="display: flex; justify-content: flex-end;">
-            <button id="confirm-add-sub" class="btn" style="width: auto; padding: 10px 15px;">ESTABLISH</button>
+            <button id="confirm-add-sub" class="btn" style="width: auto; padding: 0 15px;">ESTABLISH</button>
           </div>
         </div>
-        <button id="show-add-sub-btn" class="dashed-btn">+ ESTABLISH SUB-DIRECTIVE</button>
+        <button id="show-add-sub-btn" class="dashed-btn"><i class="fa-solid fa-plus" style="margin-right: 8px;"></i> ESTABLISH SUB-DIRECTIVE</button>
       </div>
 
       <!-- FOCUS TAB -->

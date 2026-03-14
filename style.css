@@ -1,88 +1,10 @@
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background-color: #000; color: #FFF; font-family: 'Courier New', Courier, monospace; overflow: hidden; }
-
-.screen { width: 100vw; height: 100vh; display: flex; flex-direction: column; }
-#identity-screen { justify-content: center; align-items: center; padding: 30px; max-width: 500px; margin: 0 auto; }
-.hidden { display: none !important; }
-
-/* Typography & Inputs */
-.title { color: #FFF; font-size: 32px; font-weight: 900; letter-spacing: 5px; margin-bottom: 10px; text-align: center; }
-.subtitle { color: #00FFFF; font-size: 10px; letter-spacing: 2px; margin-bottom: 50px; text-align: center; }
-.input-group { margin-bottom: 20px; width: 100%; }
-input { width: 100%; background-color: #000; color: #00FFFF; font-size: 16px; border: none; border-bottom: 1px solid #333; padding: 15px 5px; font-family: 'Courier New', Courier, monospace; outline: none; }
-input::placeholder { color: #444; }
-input:focus { border-bottom-color: #00FFFF; }
-
-/* Buttons */
-.btn { background-color: #00FFFF; color: #000; font-weight: bold; font-size: 14px; letter-spacing: 2px; padding: 15px; border: none; cursor: pointer; width: 100%; }
-.btn:hover { opacity: 0.8; }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-.action-btn { background-color: #00FFFF; color: #000; width: 50px; height: 50px; border: none; cursor: pointer; font-size: 20px; display: flex; justify-content: center; align-items: center; }
-.dashed-btn { background: transparent; border: 1px dashed #333; color: #00FFFF; padding: 15px; width: 100%; cursor: pointer; font-family: 'Courier New', Courier, monospace; letter-spacing: 1px; margin-bottom: 20px; }
-.icon-btn { background: transparent; border: none; color: #FFF; font-size: 20px; cursor: pointer; }
-
-/* Header & Nav */
-.top-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; padding-top: 40px; }
-.header-title { font-size: 20px; font-weight: 900; letter-spacing: 4px; }
-.header-badge { border: 1px solid #333; padding: 5px 10px; font-size: 12px; color: #666; font-weight: bold; }
-.header-badge.active { background: #00FFFF; color: #000; border-color: #00FFFF; }
-
-.content-area { flex: 1; overflow-y: auto; padding: 0 20px; padding-bottom: 80px; }
-.tab-content { display: none; }
-.tab-content.active-tab { display: block; }
-
-.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; height: 70px; background: #000; border-top: 1px solid #222; display: flex; justify-content: space-around; align-items: center; z-index: 100; }
-.nav-btn { background: transparent; border: none; color: #444; font-size: 24px; cursor: pointer; padding: 10px; transition: color 0.2s; }
-.nav-btn.active { color: #00FFFF; }
-
-/* Habits & Lists */
-.list-container { margin-bottom: 20px; }
-.list-item { background: #000; border: 1px solid #FFF; padding: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; cursor: pointer; }
-.list-item.completed { border-color: #00FFFF; background: rgba(0,255,255,0.05); }
-.list-item.directive { border-color: #AA00FF; border-style: dashed; }
-.item-left { display: flex; align-items: center; gap: 15px; flex: 1; }
-.checkbox { width: 24px; height: 24px; border: 1px solid #FFF; display: flex; justify-content: center; align-items: center; }
-.completed .checkbox { background: #00FFFF; border-color: #00FFFF; color: #000; }
-.directive.completed .checkbox { background: #AA00FF; border-color: #AA00FF; }
-.item-name { font-weight: bold; font-size: 14px; letter-spacing: 1px; }
-.completed .item-name { color: #00FFFF; text-decoration: line-through; }
-.item-right { display: flex; gap: 15px; align-items: center; }
-
-/* Habit Add Form */
-.days-row { display: flex; justify-content: space-between; margin-bottom: 15px; }
-.day-badge { width: 35px; height: 35px; border: 1px solid #333; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 12px; font-weight: bold; color: #333; }
-.day-badge.active { background: #FFF; color: #000; border-color: #FFF; }
-.input-row { display: flex; gap: 15px; margin-bottom: 20px; }
-
-/* Directives */
-.inject-row { display: flex; gap: 15px; margin-bottom: 20px; }
-.directives-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-.goal-circle { background: #0a0a0a; border: 1px solid #222; padding: 15px; display: flex; flex-direction: column; align-items: center; cursor: pointer; position: relative; }
-.shared-badge { position: absolute; top: 5px; right: 5px; color: #AA00FF; font-size: 12px; }
-.svg-wrapper { position: relative; width: 90px; height: 90px; margin-bottom: 10px; }
-.circle-text { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 16px; }
-.goal-title { font-size: 10px; font-weight: bold; text-align: center; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
-.goal-subtext { font-size: 10px; color: #666; margin-top: 5px; }
-.section-label { color: #666; font-size: 10px; letter-spacing: 2px; margin-bottom: 15px; }
-
-/* Focus Timer */
-.target-badge { padding: 15px; border: 1px solid #333; background: #0a0a0a; color: #666; font-size: 10px; font-weight: bold; letter-spacing: 2px; margin-bottom: 30px; cursor: pointer; }
-.target-badge.locked { border-color: #00FFFF; color: #00FFFF; background: rgba(0,255,255,0.05); }
-.timer-text { font-size: 80px; font-weight: 200; color: #444; letter-spacing: 5px; margin-bottom: 10px; }
-.timer-text.active { color: #FFF; }
-.status-text { color: #00FFFF; font-size: 12px; font-weight: bold; letter-spacing: 3px; margin-bottom: 20px; }
-.sync-badge { background: transparent; border: 1px solid #222; color: #666; padding: 8px 16px; border-radius: 20px; font-size: 10px; letter-spacing: 1px; font-weight: bold; cursor: pointer; font-family: 'Courier New', Courier, monospace; }
-.sync-badge.active { border-color: rgba(0,255,255,0.3); background: rgba(0,255,255,0.05); color: #00FFFF; }
-.presets { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
-.preset-btn { width: 50px; height: 50px; background: transparent; border: 1px solid #333; color: #666; font-size: 16px; font-weight: bold; cursor: pointer; }
-.preset-btn.active { border-color: #00FFFF; color: #00FFFF; background: rgba(0,255,255,0.1); }
-.play-btn { width: 80px; height: 80px; bor/* =========================================
+/* =========================================
    GLOBAL & TERMINAL AESTHETIC
 ========================================= */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body { 
-  background-color: #050505; /* Slightly offset from absolute black for the wrapper */
+  background-color: #080808; /* Dark grey backdrop outside the app */
   color: #FFF; 
   font-family: 'Courier New', Courier, monospace; 
   height: 100vh;
@@ -92,21 +14,21 @@ body {
 }
 
 /* Custom Scrollbar */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar { width: 2px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #333; }
-::-webkit-scrollbar-thumb:hover { background: #00FFFF; }
 
 .hidden { display: none !important; }
 
-/* Constrain to Mobile App Width on Web */
+/* Constrain to exact Mobile App Width */
 .screen { 
   width: 100vw; 
-  max-width: 500px; 
+  max-width: 430px; /* iPhone Pro Max width - fixes the "too far apart" issue */
   height: 100vh; 
   background: #000;
-  border-left: 1px solid #222;
-  border-right: 1px solid #222;
+  border-left: 1px solid #1a1a1a;
+  border-right: 1px solid #1a1a1a;
+  box-shadow: 0 0 30px rgba(0,0,0,0.8);
   display: flex; 
   flex-direction: column; 
   position: relative;
@@ -115,41 +37,55 @@ body {
 /* =========================================
    TYPOGRAPHY & INPUTS
 ========================================= */
-.title { color: #FFF; font-size: 32px; font-weight: 900; letter-spacing: 5px; margin-bottom: 10px; text-align: center; }
-.subtitle { color: #00FFFF; font-size: 10px; letter-spacing: 2px; margin-bottom: 50px; text-align: center; }
+.title { color: #FFF; font-size: 28px; font-weight: 900; letter-spacing: 4px; margin-bottom: 10px; text-align: center; }
+.subtitle { color: #00FFFF; font-size: 10px; letter-spacing: 2px; margin-bottom: 40px; text-align: center; }
 .section-label { color: #666; font-size: 10px; letter-spacing: 2px; margin-bottom: 15px; font-weight: bold; text-transform: uppercase; }
 .error-text { color: #FF3333; font-size: 10px; text-align: center; margin-bottom: 20px; letter-spacing: 1px; }
 
 input { 
   background-color: #000; 
-  color: #00FFFF; 
-  font-size: 16px; 
+  color: #FFF; 
+  font-size: 14px; 
   border: none; 
   border-bottom: 1px solid #333; 
-  padding: 15px 5px; 
+  padding: 0 10px; 
+  height: 50px; /* Lock height to match buttons */
   font-family: 'Courier New', Courier, monospace; 
   outline: none; 
   width: 100%;
   transition: border-color 0.2s;
+  letter-spacing: 1px;
 }
-input::placeholder { color: #444; }
+input::placeholder { color: #666; }
 input:focus { border-bottom-color: #00FFFF; }
 
 /* =========================================
-   BUTTONS
+   BUTTONS (Locked Proportions)
 ========================================= */
-.btn { background-color: #00FFFF; color: #000; font-weight: bold; font-size: 14px; letter-spacing: 2px; padding: 15px; border: none; cursor: pointer; width: 100%; }
+.btn { background-color: #00FFFF; color: #000; font-weight: bold; font-size: 14px; letter-spacing: 2px; padding: 15px; border: none; cursor: pointer; width: 100%; height: 50px;}
 .btn:hover { opacity: 0.8; }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.action-btn { background-color: #00FFFF; color: #000; width: 50px; height: 50px; border: none; cursor: pointer; font-size: 20px; display: flex; justify-content: center; align-items: center; }
+.action-btn { 
+  background-color: #00FFFF; 
+  color: #000; 
+  width: 50px; 
+  height: 50px; 
+  border: none; 
+  cursor: pointer; 
+  font-size: 24px; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  flex-shrink: 0; /* Prevents browser from making it tiny */
+}
 .action-btn:hover { opacity: 0.8; }
 
 .dashed-btn { 
   background: transparent; 
   border: 1px dashed #333; 
   color: #00FFFF; 
-  padding: 15px; 
+  height: 50px;
   width: 100%; 
   cursor: pointer; 
   font-family: 'Courier New', Courier, monospace; 
@@ -157,27 +93,41 @@ input:focus { border-bottom-color: #00FFFF; }
   margin-bottom: 20px; 
   font-size: 12px;
   font-weight: bold;
-  transition: all 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .dashed-btn:hover { border-color: #00FFFF; background: rgba(0,255,255,0.05); }
 
-.icon-btn { background: transparent; border: none; color: #FFF; font-size: 20px; cursor: pointer; transition: opacity 0.2s; }
+.icon-btn { 
+  background: transparent; 
+  border: none; 
+  color: #FFF; 
+  width: 30px; 
+  height: 30px; 
+  font-size: 20px; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  cursor: pointer; 
+  flex-shrink: 0; 
+}
 .icon-btn:hover { opacity: 0.7; }
 
 /* =========================================
    LAYOUT STRUCTURE (HEADER & NAV)
 ========================================= */
-#identity-screen { justify-content: center; align-items: center; padding: 30px; }
+#identity-screen { justify-content: center; align-items: center; padding: 20px; }
 .input-group { width: 100%; margin-bottom: 20px; }
 
-.top-header { display: flex; justify-content: space-between; align-items: center; padding: 60px 20px 20px 20px; }
+.top-header { display: flex; justify-content: space-between; align-items: center; padding: 40px 20px 20px 20px; }
 .header-title { font-size: 24px; font-weight: 900; letter-spacing: 4px; }
 .header-badge { border: 1px solid #333; padding: 6px 12px; font-size: 12px; color: #666; font-weight: bold; letter-spacing: 1px; }
 .header-badge.active { background: #00FFFF; color: #000; border-color: #00FFFF; }
 
 .content-area { flex: 1; overflow-y: auto; padding: 0 20px 20px 20px; }
 .tab-content { display: none; }
-.tab-content.active-tab { display: block; animation: fadeIn 0.3s ease-in-out; }
+.tab-content.active-tab { display: block; animation: fadeIn 0.2s ease-in-out; }
 
 .bottom-nav { 
   height: 80px; 
@@ -188,6 +138,7 @@ input:focus { border-bottom-color: #00FFFF; }
   align-items: center; 
   padding-bottom: 20px;
   padding-top: 10px;
+  flex-shrink: 0;
 }
 .nav-btn { background: transparent; border: none; color: #444; font-size: 24px; cursor: pointer; padding: 10px; transition: color 0.2s; }
 .nav-btn.active { color: #00FFFF; }
@@ -199,107 +150,88 @@ input:focus { border-bottom-color: #00FFFF; }
 .list-item { 
   background: #000; 
   border: 1px solid #FFF; 
-  padding: 20px; 
+  padding: 15px 20px; 
   display: flex; 
   justify-content: space-between; 
   align-items: center; 
-  margin-bottom: 15px; 
+  margin-bottom: 12px; 
   cursor: pointer; 
-  transition: all 0.2s;
+  gap: 15px;
 }
 .list-item.completed { border-color: #00FFFF; background: rgba(0,255,255,0.05); }
 .list-item.directive { border-color: #AA00FF; border-style: dashed; }
 .list-item.directive.completed { background: transparent; }
 
-.item-left { display: flex; align-items: center; flex: 1; }
-.checkbox { width: 24px; height: 24px; border: 1px solid #FFF; display: flex; justify-content: center; align-items: center; margin-right: 15px; }
+.item-left { display: flex; align-items: center; gap: 15px; flex: 1; overflow: hidden; }
+.checkbox { width: 24px; height: 24px; border: 1px solid #FFF; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
 .completed .checkbox { background: #00FFFF; border-color: #00FFFF; color: #000; }
 .directive.completed .checkbox { background: #AA00FF; border-color: #AA00FF; color: #000; }
 
-.item-name { font-weight: 600; font-size: 16px; letter-spacing: 1px; }
+.item-name { font-weight: 600; font-size: 14px; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .completed .item-name { color: #00FFFF; text-decoration: line-through; }
 
-.item-right { display: flex; gap: 15px; align-items: center; }
+.item-right { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
 .item-right span { display: flex; align-items: center; gap: 5px; color: #00FFFF; font-size: 14px; font-weight: bold; }
 
 /* Habit Add Form */
 .days-row { display: flex; justify-content: space-between; margin-bottom: 20px; }
-.day-badge { width: 35px; height: 35px; border: 1px solid #333; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 12px; font-weight: bold; color: #333; background: #000; transition: all 0.2s; }
+.day-badge { width: 35px; height: 35px; border: 1px solid #333; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 12px; font-weight: bold; color: #333; background: #000; }
 .day-badge.active { background: #FFF; color: #000; border-color: #FFF; }
-.input-row { display: flex; align-items: center; margin-bottom: 20px; }
-.input-row input { flex: 1; margin-right: 15px; margin-bottom: 0; }
+
+.input-row { display: flex; align-items: center; margin-bottom: 20px; gap: 15px; }
+.input-row input { margin: 0; }
 
 /* =========================================
    DIRECTIVES (GRID & DETAIL)
 ========================================= */
-.inject-row { display: flex; align-items: center; margin-bottom: 30px; }
-.inject-row input { flex: 1; margin-right: 15px; margin-bottom: 0; }
+.inject-row { display: flex; align-items: center; margin-bottom: 30px; gap: 15px; }
+.inject-row input { margin: 0; }
 
 .directives-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-.goal-circle { background: #0a0a0a; border: 1px solid #222; padding: 15px; display: flex; flex-direction: column; align-items: center; cursor: pointer; position: relative; transition: border-color 0.2s; }
-.goal-circle:hover { border-color: #333; }
+.goal-circle { background: #0a0a0a; border: 1px solid #222; padding: 15px; display: flex; flex-direction: column; align-items: center; position: relative; }
 .shared-badge { position: absolute; top: 5px; right: 5px; color: #AA00FF; font-size: 12px; }
 .svg-wrapper { position: relative; width: 90px; height: 90px; margin-bottom: 10px; }
-.circle-text { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 16px; }
-.goal-title { font-size: 12px; font-weight: bold; text-align: center; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
-.goal-subtext { font-size: 12px; color: #666; margin-top: 5px; }
+.circle-text { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 14px; }
+.goal-title { font-size: 10px; font-weight: bold; text-align: center; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+.goal-subtext { font-size: 10px; color: #666; margin-top: 5px; }
 
 /* =========================================
    FOCUS TIMER
 ========================================= */
-.target-badge { padding: 15px; border: 1px solid #333; background: #0a0a0a; color: #666; font-size: 10px; font-weight: bold; letter-spacing: 2px; margin-bottom: 30px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: all 0.2s; }
+.target-badge { padding: 15px; border: 1px solid #333; background: #0a0a0a; color: #666; font-size: 10px; font-weight: bold; letter-spacing: 2px; margin-bottom: 30px; display: flex; justify-content: center; align-items: center; gap: 10px; }
 .target-badge.locked { border-color: #00FFFF; color: #00FFFF; background: rgba(0,255,255,0.05); }
 
-.timer-text { font-size: 80px; font-weight: 200; color: #444; letter-spacing: 5px; margin-bottom: 10px; transition: color 0.3s; }
+.timer-text { font-size: 70px; font-weight: 200; color: #444; letter-spacing: 5px; margin-bottom: 10px; }
 .timer-text.active { color: #FFF; }
 .status-text { color: #00FFFF; font-size: 12px; font-weight: bold; letter-spacing: 3px; margin-bottom: 20px; }
 
-.sync-badge { background: transparent; border: 1px solid #222; color: #666; padding: 8px 16px; border-radius: 20px; font-size: 10px; letter-spacing: 1.5px; font-weight: bold; cursor: pointer; font-family: 'Courier New', Courier, monospace; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 30px; transition: all 0.3s; }
+.sync-badge { background: transparent; border: 1px solid #222; color: #666; padding: 8px 16px; border-radius: 20px; font-size: 10px; letter-spacing: 1.5px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 30px; }
 .sync-badge.active { border-color: rgba(0,255,255,0.3); background: rgba(0,255,255,0.05); color: #00FFFF; }
 
-.presets { display: flex; justify-content: center; gap: 16px; margin-bottom: 30px; }
-.preset-btn { width: 55px; height: 55px; background: transparent; border: 1px solid #333; color: #666; font-size: 16px; font-weight: bold; cursor: pointer; font-family: 'Courier New', Courier, monospace; transition: all 0.2s; }
+.presets { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
+.preset-btn { width: 55px; height: 55px; background: transparent; border: 1px solid #333; color: #666; font-size: 16px; font-weight: bold; flex-shrink: 0; }
 .preset-btn.active { border-color: #00FFFF; color: #00FFFF; background: rgba(0,255,255,0.1); }
 
-.play-btn { width: 80px; height: 80px; border-radius: 40px; background: #00FFFF; border: none; color: #000; font-size: 32px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: transform 0.1s; }
-.play-btn:active { transform: scale(0.95); }
-.reset-btn { width: 50px; height: 50px; border-radius: 25px; background: transparent; border: 1px solid #00FFFF; color: #00FFFF; font-size: 24px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+.play-btn { width: 80px; height: 80px; border-radius: 40px; background: #00FFFF; border: none; color: #000; font-size: 32px; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
+.reset-btn { width: 50px; height: 50px; border-radius: 25px; background: transparent; border: 1px solid #00FFFF; color: #00FFFF; font-size: 24px; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
 
 /* =========================================
    ANALYTICS & SETTINGS
 ========================================= */
-.vitals-grid { display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 30px; }
+.vitals-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px; }
 .vital-box { flex: 1 1 45%; border: 1px solid #222; background: #0a0a0a; padding: 15px; }
-.vital-box span { color: #666; font-size: 8px; font-weight: bold; letter-spacing: 1.5px; display: block; margin-bottom: 10px; }
-.vital-box h2 { font-size: 20px; color: #FFF; }
+.vital-box span { color: #666; font-size: 8px; font-weight: bold; letter-spacing: 1.5px; display: block; margin-bottom: 5px; }
+.vital-box h2 { font-size: 18px; color: #FFF; }
 
-.id-box { background: #111; border: 1px solid #333; padding: 15px; color: #00FFFF; font-size: 16px; letter-spacing: 1px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
-.danger-zone { border: 1px solid #FF3333; background: rgba(255,51,51,0.05); color: #FF3333; font-weight: bold; text-align: center; border-style: dashed; }
+.id-box { background: #111; border: 1px solid #333; padding: 15px; color: #00FFFF; font-size: 14px; letter-spacing: 1px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+.danger-zone { border: 1px solid #FF3333; background: rgba(255,51,51,0.05); color: #FF3333; border-style: dashed; }
 
 /* =========================================
    MODALS
 ========================================= */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
-.modal-content { background: #000; border: 1px solid #333; padding: 25px; width: 100%; max-width: 400px; max-height: 80vh; overflow-y: auto; position: relative; }
+.modal-content { background: #000; border: 1px solid #333; padding: 25px; width: 100%; max-width: 380px; max-height: 80vh; overflow-y: auto; position: relative; }
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
 .modal-title { color: #00FFFF; font-size: 16px; font-weight: bold; letter-spacing: 2px; }
 
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }der-radius: 50%; background: #00FFFF; border: none; color: #000; font-size: 30px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
-.reset-btn { width: 50px; height: 50px; border-radius: 50%; background: transparent; border: 1px solid #00FFFF; color: #00FFFF; font-size: 20px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
-
-/* Analytics */
-.vitals-grid { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 30px; }
-.vital-box { flex: 1; border: 1px solid #222; background: #0a0a0a; padding: 15px; }
-.vital-box span { color: #666; font-size: 8px; font-weight: bold; letter-spacing: 1px; }
-.vital-box h2 { font-size: 20px; margin-top: 5px; }
-
-/* Settings */
-.id-box { background: #111; border: 1px solid #333; padding: 15px; color: #00FFFF; font-size: 16px; letter-spacing: 1px; margin-bottom: 10px; }
-
-/* Modals */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; justify-content: center; align-items: center; z-index: 200; padding: 20px; }
-.modal-content { background: #000; border: 1px solid #333; padding: 20px; width: 100%; max-width: 400px; max-height: 80vh; overflow-y: auto; }
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.modal-title { color: #00FFFF; font-size: 16px; font-weight: bold; letter-spacing: 2px; }
-.target-option { padding: 15px; border-bottom: 1px solid #111; color: #FFF; font-size: 12px; cursor: pointer; }
-.target-option:hover, .target-option.active { background: rgba(0,255,255,0.05); color: #00FFFF; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
