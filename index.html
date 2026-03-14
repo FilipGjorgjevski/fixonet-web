@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PROTOCOL WEB</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- IDENTITY INIT SCREEN -->
+  <div id="identity-screen" class="screen">
+    <h1 class="title">SYSTEM_INIT</h1>
+    <p class="subtitle">ESTABLISH YOUR SYNDICATE ALIAS</p>
+
+    <div class="input-group">
+      <input type="text" id="alias-input" placeholder="ENTER ALIAS (e.g. viktor)" maxlength="12" autocomplete="off">
+    </div>
+    
+    <div class="input-group">
+      <input type="password" id="key-input" placeholder="AUTHORIZATION KEY" autocomplete="off">
+    </div>
+
+    <p id="error-message" class="error-text"></p>
+
+    <button id="init-btn" class="btn">INITIALIZE</button>
+  </div>
+
+  <!-- DASHBOARD SCREEN (Hidden by default) -->
+  <div id="dashboard-screen" class="screen hidden">
+    <div class="header">
+      <h1 class="header-title">PROTOCOL</h1>
+      <div class="id-badge">
+        <span id="user-display">LOADING...</span>
+      </div>
+    </div>
+    
+    <div class="dashboard-content">
+      <p class="empty-text">UPLINK ESTABLISHED. WELCOME TO THE NETWORK.</p>
+      <button id="logout-btn" class="btn outline-btn" style="margin-top: 50px;">SEVER CONNECTION (LOGOUT)</button>
+    </div>
+  </div>
+
+  <!-- Import app logic -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>

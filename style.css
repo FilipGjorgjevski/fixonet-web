@@ -1,0 +1,135 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #000;
+  color: #FFF;
+  font-family: 'Courier New', Courier, monospace;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.screen {
+  width: 100%;
+  max-width: 500px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.title {
+  color: #FFF;
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: 5px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.subtitle {
+  color: #00FFFF;
+  font-size: 10px;
+  letter-spacing: 2px;
+  margin-bottom: 50px;
+  text-align: center;
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+input {
+  width: 100%;
+  background-color: #000;
+  color: #00FFFF;
+  font-size: 20px;
+  border: none;
+  border-bottom: 2px solid #00FFFF;
+  padding: 15px 0;
+  text-align: center;
+  font-family: 'Courier New', Courier, monospace;
+  letter-spacing: 2px;
+  outline: none;
+}
+
+input::placeholder {
+  color: #444;
+}
+
+.error-text {
+  color: #FF3333;
+  font-size: 10px;
+  text-align: center;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+  min-height: 12px;
+}
+
+.btn {
+  background-color: #00FFFF;
+  color: #000;
+  font-weight: bold;
+  font-size: 16px;
+  letter-spacing: 2px;
+  padding: 20px;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-family: 'Courier New', Courier, monospace;
+  transition: opacity 0.2s;
+}
+
+.btn:hover {
+  opacity: 0.8;
+}
+
+.btn:disabled {
+  background-color: rgba(0, 255, 255, 0.3);
+  cursor: not-allowed;
+}
+
+.outline-btn {
+  background-color: transparent;
+  color: #FF3333;
+  border: 1px solid #FF3333;
+}
+
+/* Dashboard Styles */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.header-title {
+  color: #FFF;
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 4px;
+}
+
+.id-badge {
+  padding: 6px 12px;
+  border: 1px solid #333;
+  color: #00FFFF;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.empty-text {
+  color: #444;
+  text-align: center;
+  letter-spacing: 2px;
+  margin-top: 50px;
+  font-size: 12px;
+}
