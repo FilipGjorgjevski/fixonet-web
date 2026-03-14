@@ -13,19 +13,9 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // ==========================================
-// 2. GLOBAL STATE (Context Equivalents)
-// ==========================================
-// 2. DOM ELEMENTS (Ensure these exist in index.html)
-// ==========================================
-const identityScreen = document.getElementById('identity-screen');
-const mainApp = document.getElementById('main-app'); // Renamed from dashboard-screen
-const aliasInput = document.getElementById('alias-input');
-const keyInput = document.getElementById('key-input');
-const initBtn = document.getElementById('init-btn');
-const errorText = document.getElementById('error-message');
+// 2. GLOBAL STATE
 // ==========================================
 const state = {
-  
   userId: localStorage.getItem('@superhuman_identity_web'),
   unallocated: parseFloat(localStorage.getItem('@superhuman_unallocated')) || 0,
   habits: JSON.parse(localStorage.getItem('@superhuman_habits_pure')) ||[],
@@ -50,7 +40,7 @@ const state = {
   // UI State
   currentTab: 'tab-habits',
   viewingDirectiveId: null,
-  selectedDays:[0,1,2,3,4,5,6]
+  selectedDays: [0, 1, 2, 3, 4, 5, 6]
 };
 
 // ==========================================
@@ -66,14 +56,13 @@ const saveLocal = () => {
 };
 
 // ==========================================
-// 4. FIREBASE LISTENERS (Multiplayer Sync)
+// 4. FIREBASE LISTENERS
 // ==========================================
 let unsubUser, unsubSharedDirs, unsubRoom;
 
 function setupFirebaseListeners() {
   if (!state.userId) return;
 
-  // 1. Listen to User Doc (Uplink requests / Sync status)
   unsubUser = onSnapshot(doc(db, 'users', state.userId), (snap) => {
     if (snap.exists()) {
       const data = snap.data();
@@ -90,7 +79,6 @@ function setupFirebaseListeners() {
     }
   });
 
-  // 2. Listen to Shared Directives
   const q = query(collection(db, 'shared_directives'), where('participants', 'array-contains', state.userId));
   unsubSharedDirs = onSnapshot(q, (snapshot) => {
     const fetched =[];
@@ -127,58 +115,21 @@ function setupRoomListener(roomId) {
 }
 
 // ==========================================
-// 5. CORE INITIALIZATION
+// 5. CORE BOOT & INIT
 // ==========================================
-
 function bootApp() {
-  if (state.userId) {
-    // Safety check to prevent the "Cannot read properties of null" error
-    if (identityScreen && mainApp) {
-      identityScreen.classList.add('hidden');
-      mainApp.classList.remove('hidden');
-      
-      const settingsId = document.getElementById('settings-user-id');
-      if (settingsId) settingsId.innerText = state.userId;
-      
-      setupFirebaseListeners();
-      renderAll();
-    }
-  } else {
-    if (identityScreen && mainApp) {
-      identityScreen.classList.remove('hidden');
-      mainApp.classList.add('hidden');
-    }
-  }
+  const identityScreen = document.getElementById('identity-screen');
+  const mainApp = document.getElementById('main-app');
+  
+  if (identityScreen) identityScreen.classList.add('hidden');
+  if (mainApp) mainApp.classList.remove('hidden');
+  
+  const settingsId = document.getElementById('settings-user-id');
+  if (settingsId) settingsId.innerText = state.userId;
+  
+  setupFirebaseListeners();
+  renderAll();
 }
-
-document.getElementById('init-btn').addEventListener('click', async () => {
-  const alias = document.getElementById('alias-input').value.trim().toLowerCase();
-  const key = document.getElementById('key-input').value.trim();
-  const err = document.getElementById('error-message');
-
-  if (alias.length < 3) return err.innerText = 'ALIAS MUST BE > 2 CHARS';
-  if (!key) return err.innerText = 'KEY REQUIRED';
-  err.innerText = 'PROCESSING...';
-
-  try {
-    let uniqueId = '', isAvailable = false;
-    while (!isAvailable) {
-      const testId = `${alias}#${generateTag()}`;
-      const docRef = doc(db, 'users', testId);
-      const snap = await getDoc(docRef);
-      if (!snap.exists()) {
-        await setDoc(docRef, { baseName: alias, tag: testId.split('#')[1], accessKey: key, createdAt: new Date().toISOString() });
-        uniqueId = testId;
-        isAvailable = true;
-      }
-    }
-    localStorage.setItem('@superhuman_identity_web', uniqueId);
-    state.userId = uniqueId;
-    bootApp();
-  } catch (e) {
-    err.innerText = e.code === 'permission-denied' ? 'ACCESS DENIED: INVALID KEY' : 'NETWORK ERROR';
-  }
-});
 
 // ==========================================
 // 6. ROUTING & UI REFRESH
@@ -199,10 +150,6 @@ function switchTab(tabId) {
 
   renderAll();
 }
-
-document.querySelectorAll('.nav-btn').forEach(btn => {
-  btn.addEventListener('click', (e) => switchTab(e.currentTarget.dataset.tab));
-});
 
 function renderAll() {
   if (state.currentTab === 'tab-habits') renderHabits();
@@ -231,7 +178,6 @@ function renderHabits() {
   const todayStr = getTodayStr();
   const dayOfWeek = new Date().getDay();
 
-  // 1. Pinned Directives
   const allDirs =[...state.localDirectives, ...state.sharedDirectives];
   const pinnedTasks = allDirs.filter(d => d.isPinned && d.type === 'TASK');
   
@@ -239,7 +185,6 @@ function renderHabits() {
     list.innerHTML += createListItemHTML(task.id, task.title, task.isCompleted, true, 0);
   });
 
-  // 2. Scheduled Habits
   const todaysHabits = state.habits.filter(h => h.frequency.includes(dayOfWeek));
   todaysHabits.forEach(habit => {
     const isCompleted = !!habit.history[todayStr];
@@ -248,10 +193,9 @@ function renderHabits() {
 
   if(list.innerHTML === '') list.innerHTML = '<p class="section-label" style="text-align:center;">NO TASKS TODAY.</p>';
 
-  // Attach Listeners
   list.querySelectorAll('.list-item').forEach(el => {
     el.addEventListener('click', (e) => {
-      if(e.target.closest('.delete-habit-btn')) return; // handled separately
+      if(e.target.closest('.delete-habit-btn')) return; 
       const id = el.dataset.id;
       const isDir = el.dataset.isdir === 'true';
       if(isDir) toggleDirectiveTask(id, el.classList.contains('completed'));
@@ -282,23 +226,6 @@ function createListItemHTML(id, name, isCompleted, isDir, streak) {
     </div>
   `;
 }
-
-// Add Habit Form
-document.querySelectorAll('.day-badge').forEach(b => {
-  b.addEventListener('click', (e) => {
-    const day = parseInt(e.target.dataset.day);
-    if(state.selectedDays.includes(day)) state.selectedDays = state.selectedDays.filter(d => d !== day);
-    else state.selectedDays.push(day);
-    e.target.classList.toggle('active');
-  });
-});
-
-document.getElementById('add-habit-btn').addEventListener('click', () => {
-  const input = document.getElementById('new-habit-input');
-  if(!input.value.trim() || state.selectedDays.length === 0) return;
-  state.habits.push({ id: Date.now().toString(), name: input.value.trim().toUpperCase(), frequency:[...state.selectedDays], history: {}, totalCompletions: 0 });
-  input.value = ''; saveLocal(); renderHabits();
-});
 
 function toggleHabit(id, dateStr) {
   const habit = state.habits.find(h => h.id === id);
@@ -336,16 +263,15 @@ function calculateGlobalStreak() {
 }
 
 // ==========================================
-// 8. DIRECTIVES MATH & UI
+// 8. DIRECTIVES LOGIC
 // ==========================================
-function getCombinedDirectives() { return[...state.localDirectives, ...state.sharedDirectives]; }
+function getCombinedDirectives() { return [...state.localDirectives, ...state.sharedDirectives]; }
 
 function getDirectiveStats(id) {
   const all = getCombinedDirectives();
   const dir = all.find(d => d.id === id);
   if(!dir) return { progress:0, currentStr:'', targetStr:'', isComplete:false, totalTime:0 };
 
-  // Recurse Time
   const getTimeMap = (dId) => {
     let map = {};
     const d = all.find(x => x.id === dId);
@@ -404,36 +330,11 @@ function renderDirectives() {
   });
 }
 
-// INJECT CAPITAL POOL
-document.getElementById('inject-capital-btn').onclick = () => {
-  const val = parseFloat(document.getElementById('inject-capital-input').value);
-  if(val>0) { state.unallocated += val; saveLocal(); updateHeaderBadge(); document.getElementById('inject-capital-input').value=''; }
-};
-
-// ADD MASTER DIRECTIVE
-document.getElementById('add-master-directive-btn').onclick = () => {
-  const title = prompt("MASTER PROJECT NAME:");
-  if(title) {
-    const newDir = { id: Date.now().toString(), parentId: null, title: title.toUpperCase(), type: 'TASK', target: 1, current: 0, isCompleted: false, isPinned: false, isShared: false, participants:[state.userId], createdAt: new Date().toISOString() };
-    state.localDirectives.push(newDir); saveLocal(); renderDirectives();
-  }
-};
-
-// ==========================================
-// 9. DIRECTIVE DETAIL VIEW
-// ==========================================
-function showDirectiveDetail(id) {
+window.showDirectiveDetail = function(id) {
   state.viewingDirectiveId = id;
   document.getElementById('tab-directives').style.display = 'none';
   document.getElementById('tab-directive-detail').style.display = 'block';
   renderDirectiveDetail(id);
-}
-
-document.getElementById('back-to-directives').onclick = () => {
-  state.viewingDirectiveId = null;
-  document.getElementById('tab-directive-detail').style.display = 'none';
-  document.getElementById('tab-directives').style.display = 'block';
-  renderDirectives();
 };
 
 async function renderDirectiveDetail(id) {
@@ -455,11 +356,9 @@ async function renderDirectiveDetail(id) {
     </div>
   `;
 
-  // Sharing Setup
   const shareBox = document.getElementById('share-directive-box');
   if(!dir.parentId && !dir.isShared) shareBox.style.display = 'flex'; else shareBox.style.display = 'none';
   
-  // Render Sub-Directives
   const list = document.getElementById('sub-directives-list');
   list.innerHTML = '';
   children.forEach(c => {
@@ -491,7 +390,6 @@ async function renderDirectiveDetail(id) {
       </div>`;
   });
 
-  // Attach Sub-Directive Events
   document.querySelectorAll('.toggle-task-btn').forEach(b => b.onclick = (e) => toggleDirectiveTask(e.currentTarget.dataset.id));
   document.querySelectorAll('.pin-task-btn').forEach(b => b.onclick = (e) => togglePin(e.currentTarget.dataset.id));
   document.querySelectorAll('.alloc-btn').forEach(b => b.onclick = (e) => {
@@ -501,7 +399,6 @@ async function renderDirectiveDetail(id) {
   });
 }
 
-// Logic implementations for Directives
 async function toggleDirectiveTask(id, forceValue=null) {
   const dir = getCombinedDirectives().find(d=>d.id===id);
   const newVal = forceValue !== null ? !forceValue : !dir.isCompleted;
@@ -532,58 +429,8 @@ async function allocateFunds(id, amount) {
   renderDirectiveDetail(state.viewingDirectiveId);
 }
 
-document.getElementById('target-lock-btn').onclick = () => {
-  state.activeFocusDirectiveId = state.viewingDirectiveId;
-  const dir = getCombinedDirectives().find(d=>d.id===state.viewingDirectiveId);
-  document.getElementById('focus-target-badge').innerText = `TARGET LOCKED: ${dir.title}`;
-  document.getElementById('focus-target-badge').classList.add('locked');
-  switchTab('tab-focus');
-};
-
-document.getElementById('delete-directive-btn').onclick = async () => {
-  if(!confirm("DELETE TARGET & SUB-TARGETS?")) return;
-  const id = state.viewingDirectiveId;
-  const toDel = [id];
-  const getC = (pId) => { getCombinedDirectives().filter(d=>d.parentId===pId).forEach(c=>{toDel.push(c.id); getC(c.id);}); };
-  getC(id);
-
-  const isShared = getCombinedDirectives().find(d=>d.id===id)?.isShared;
-  if(isShared) {
-    const batch = writeBatch(db);
-    toDel.forEach(dId => batch.delete(doc(db, 'shared_directives', dId)));
-    await batch.commit();
-  } else {
-    state.localDirectives = state.localDirectives.filter(d => !toDel.includes(d.id));
-    saveLocal();
-  }
-  if(state.activeFocusDirectiveId === id) { state.activeFocusDirectiveId = null; updateFocusUI(); }
-  document.getElementById('back-to-directives').click();
-};
-
-document.getElementById('show-add-sub-btn').onclick = () => document.getElementById('add-sub-form').classList.remove('hidden');
-document.getElementById('sub-type-select').onchange = (e) => {
-  document.getElementById('sub-target-input').style.display = e.target.value === 'TASK' ? 'none' : 'block';
-};
-document.getElementById('confirm-add-sub').onclick = async () => {
-  const title = document.getElementById('sub-title-input').value.trim().toUpperCase();
-  const type = document.getElementById('sub-type-select').value;
-  const target = parseFloat(document.getElementById('sub-target-input').value) || 0;
-  if(!title) return;
-
-  const p = getCombinedDirectives().find(d=>d.id===state.viewingDirectiveId);
-  const newDir = { id: Date.now().toString(), parentId: p.id, title, type, target: type==='TIME'?target*60:target, current:0, isCompleted:false, isPinned:false, isShared:p.isShared, participants:p.participants, timeInvested:{[state.userId]:0}, createdAt: new Date().toISOString() };
-  if(newDir.type==='FINANCE') newDir.contributions = {[state.userId]:0};
-
-  if(p.isShared) await setDoc(doc(db, 'shared_directives', newDir.id), newDir);
-  else { state.localDirectives.push(newDir); saveLocal(); }
-  
-  document.getElementById('add-sub-form').classList.add('hidden');
-  document.getElementById('sub-title-input').value = '';
-  renderDirectiveDetail(p.id);
-};
-
 // ==========================================
-// 10. FOCUS TIMER & SYNDICATE
+// 9. FOCUS TIMER
 // ==========================================
 function formatTime(secs) {
   const m = Math.floor(secs/60), s = secs%60;
@@ -591,56 +438,34 @@ function formatTime(secs) {
 }
 
 function updateFocusUI() {
-  document.getElementById('timer-display').innerText = formatTime(state.timeLeft);
-  document.getElementById('timer-status').innerText = state.isActive ? "PROTOCOL ACTIVE" : "SYSTEM IDLE";
-  document.getElementById('timer-display').className = state.isActive ? 'timer-text active' : 'timer-text';
-  document.getElementById('toggle-timer-btn').innerHTML = state.isActive ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play"></i>';
+  const display = document.getElementById('timer-display');
+  const status = document.getElementById('timer-status');
+  const toggleBtn = document.getElementById('toggle-timer-btn');
+  const badgeBtn = document.getElementById('sync-badge-btn');
   
-  const b = document.getElementById('sync-badge-btn');
-  if(state.isLinked) {
-    b.classList.add('active');
-    document.getElementById('sync-text').innerText = `UPLINK: ${state.partnerId.split('#')[0].toUpperCase()}`;
-  } else {
-    b.classList.remove('active');
-    document.getElementById('sync-text').innerText = "SOLO INSTANCE";
+  if(display) display.innerText = formatTime(state.timeLeft);
+  if(status) status.innerText = state.isActive ? "PROTOCOL ACTIVE" : "SYSTEM IDLE";
+  if(display) display.className = state.isActive ? 'timer-text active' : 'timer-text';
+  if(toggleBtn) toggleBtn.innerHTML = state.isActive ? '<i class="fa-solid fa-pause"></i>' : '<i class="fa-solid fa-play"></i>';
+  
+  if(badgeBtn) {
+    if(state.isLinked) {
+      badgeBtn.classList.add('active');
+      document.getElementById('sync-text').innerText = `UPLINK: ${state.partnerId.split('#')[0].toUpperCase()}`;
+    } else {
+      badgeBtn.classList.remove('active');
+      document.getElementById('sync-text').innerText = "SOLO INSTANCE";
+    }
   }
 
-  // History Render
   const hl = document.getElementById('focus-history-list');
-  hl.innerHTML = state.focusHistory.slice(0,4).map(s => `
+  if(hl) hl.innerHTML = state.focusHistory.slice(0,4).map(s => `
     <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
       <span style="color:#FFF;">${s.date}</span>
       <span style="color:#00FFFF; font-weight:bold;">${s.minutes} MIN</span>
     </div>
   `).join('');
 }
-
-document.querySelectorAll('.preset-btn').forEach(b => {
-  b.onclick = async (e) => {
-    if(state.isActive) return;
-    document.querySelectorAll('.preset-btn').forEach(x=>x.classList.remove('active'));
-    e.target.classList.add('active');
-    const m = parseInt(e.target.dataset.mins);
-    state.initialTime = m*60; state.timeLeft = m*60;
-    if(state.isLinked && state.roomId) await updateDoc(doc(db,'focus_rooms',state.roomId), {status:'idle', duration:m*60, allocatedTime:m*60});
-    updateFocusUI();
-  }
-});
-
-document.getElementById('toggle-timer-btn').onclick = async () => {
-  if(state.isLinked && state.roomId) {
-    const ref = doc(db, 'focus_rooms', state.roomId);
-    if(!state.isActive) await updateDoc(ref, {status:'running', startTime:Date.now(), allocatedTime:state.timeLeft});
-    else await updateDoc(ref, {status:'paused', allocatedTime:state.timeLeft});
-  } else {
-    if(!state.isActive) startLocalTimerLoop(); else stopLocalTimerLoop();
-  }
-};
-
-document.getElementById('reset-timer-btn').onclick = async () => {
-  if(state.isLinked && state.roomId) await updateDoc(doc(db,'focus_rooms',state.roomId), {status:'idle', allocatedTime:state.initialTime});
-  else { stopLocalTimerLoop(); state.timeLeft = state.initialTime; updateFocusUI(); }
-};
 
 function startLocalTimerLoop() {
   state.isActive = true; updateFocusUI();
@@ -669,7 +494,6 @@ async function handleSessionComplete() {
   state.focusHistory.unshift({ id: Date.now().toString(), date: getTodayStr(), minutes: mins });
   saveLocal();
 
-  // Target Injection
   if(state.activeFocusDirectiveId) {
     const dId = state.activeFocusDirectiveId;
     const dir = getCombinedDirectives().find(d=>d.id===dId);
@@ -684,58 +508,20 @@ async function handleSessionComplete() {
   if(state.isLinked && state.roomId) await updateDoc(doc(db,'focus_rooms',state.roomId), {status:'idle', allocatedTime:state.initialTime});
 }
 
-// Uplink Logic
-document.getElementById('sync-badge-btn').onclick = () => {
-  if(state.isLinked) {
-    showModal('SYNDICATE UPLINK', `
-      <div style="text-align:center;">
-        <i class="fa-solid fa-earth-americas" style="font-size:40px; color:#00FFFF; margin-bottom:20px;"></i>
-        <p style="color:#666; font-size:12px; letter-spacing:2px;">CONNECTED TO:</p>
-        <p style="color:#00FFFF; font-size:20px; font-family:monospace; margin-bottom:30px;">${state.partnerId}</p>
-        <button id="sever-link-btn" class="dashed-btn" style="border-color:#FF3333; color:#FF3333;">SEVER CONNECTION</button>
-      </div>
-    `);
-    document.getElementById('sever-link-btn').onclick = async () => {
-      if(state.roomId) await updateDoc(doc(db,'focus_rooms',state.roomId), {status:'idle'});
-      await updateDoc(doc(db,'users',state.userId), {focusPartner:null, activeFocusRoom:null});
-      if(state.partnerId) await updateDoc(doc(db,'users',state.partnerId), {focusPartner:null, activeFocusRoom:null});
-      hideModal();
-    };
-  } else {
-    showModal('SYNDICATE UPLINK', `
-      <p style="color:#888; font-size:12px; margin-bottom:20px;">Enter partner ID to send uplink request.</p>
-      <input type="text" id="partner-request-input" placeholder="e.g. viktor#1234" style="text-align:center; margin-bottom:20px;">
-      <button id="send-request-btn" class="btn">SEND REQUEST</button>
-    `);
-    document.getElementById('send-request-btn').onclick = async () => {
-      const pId = document.getElementById('partner-request-input').value.trim();
-      if(!pId || pId===state.userId) return;
-      const snap = await getDoc(doc(db,'users',pId));
-      if(!snap.exists()) return alert("ID NOT FOUND");
-      await updateDoc(doc(db,'users',pId), {pendingFocusRequest: state.userId});
-      alert("REQUEST SENT"); hideModal();
-    };
-  }
-};
-
 function showUplinkPopup() {
-  document.getElementById('uplink-popup').classList.remove('hidden');
-  document.getElementById('uplink-request-text').innerHTML = `<span style="color:#FFF; font-weight:bold;">${state.pendingRequest.split('#')[0].toUpperCase()}</span> IS REQUESTING SYNC.`;
+  const p = document.getElementById('uplink-popup');
+  const t = document.getElementById('uplink-request-text');
+  if(p) p.classList.remove('hidden');
+  if(t && state.pendingRequest) t.innerHTML = `<span style="color:#FFF; font-weight:bold;">${state.pendingRequest.split('#')[0].toUpperCase()}</span> IS REQUESTING SYNC.`;
 }
-function hideUplinkPopup() { document.getElementById('uplink-popup').classList.add('hidden'); }
 
-document.getElementById('deny-uplink-btn').onclick = async () => {
-  await updateDoc(doc(db,'users',state.userId), {pendingFocusRequest:null});
-};
-document.getElementById('accept-uplink-btn').onclick = async () => {
-  const newRoomId = `room_${[state.userId, state.pendingRequest].sort().join('_')}`;
-  await setDoc(doc(db,'focus_rooms',newRoomId), { participants:[state.userId, state.pendingRequest], status:'idle', duration:state.initialTime, allocatedTime:state.initialTime});
-  await updateDoc(doc(db,'users',state.userId), { focusPartner:state.pendingRequest, activeFocusRoom:newRoomId, pendingFocusRequest:null});
-  await updateDoc(doc(db,'users',state.pendingRequest), { focusPartner:state.userId, activeFocusRoom:newRoomId });
-};
+function hideUplinkPopup() { 
+  const p = document.getElementById('uplink-popup');
+  if(p) p.classList.add('hidden'); 
+}
 
 // ==========================================
-// 11. ANALYTICS (Chart.js)
+// 10. ANALYTICS (Chart.js)
 // ==========================================
 let trendChartInstance, pieChartInstance;
 function renderAnalytics() {
@@ -743,7 +529,6 @@ function renderAnalytics() {
   const totMins = state.focusHistory.reduce((s,i)=>s+i.minutes,0);
   document.getElementById('stat-focus').innerText = `${Math.floor(totMins/60)}H ${totMins%60}M`;
 
-  // 7-Day Trend Data
   const labels=[], data=[];
   for(let i=6; i>=0; i--) {
     const d = new Date(); d.setDate(d.getDate()-i);
@@ -752,79 +537,313 @@ function renderAnalytics() {
     data.push(state.focusHistory.filter(x=>x.date===dStr).reduce((s,x)=>s+x.minutes,0));
   }
 
-  const ctxTrend = document.getElementById('trendChart').getContext('2d');
-  if(trendChartInstance) trendChartInstance.destroy();
-  trendChartInstance = new Chart(ctxTrend, {
-    type: 'line', data: { labels, datasets:[{ data, borderColor:'#AA00FF', backgroundColor:'rgba(170,0,255,0.1)', fill:true, tension:0.4 }] },
-    options: { plugins:{legend:{display:false}}, scales:{ y:{beginAtZero:true, grid:{color:'#222'}, ticks:{color:'#666'}}, x:{grid:{color:'#222'}, ticks:{color:'#666'}} } }
-  });
+  const trendEl = document.getElementById('trendChart');
+  if(trendEl) {
+    const ctxTrend = trendEl.getContext('2d');
+    if(trendChartInstance) trendChartInstance.destroy();
+    trendChartInstance = new Chart(ctxTrend, {
+      type: 'line', data: { labels, datasets:[{ data, borderColor:'#AA00FF', backgroundColor:'rgba(170,0,255,0.1)', fill:true, tension:0.4 }] },
+      options: { plugins:{legend:{display:false}}, scales:{ y:{beginAtZero:true, grid:{color:'#222'}, ticks:{color:'#666'}}, x:{grid:{color:'#222'}, ticks:{color:'#666'}} } }
+    });
+  }
 
-  // Pie Chart Data
   let tC=0, fC=0, hC=0;
   getCombinedDirectives().forEach(d => { if(d.type==='TASK')tC++; if(d.type==='FINANCE')fC++; if(d.type==='TIME')hC++; });
   
-  const ctxPie = document.getElementById('pieChart').getContext('2d');
-  if(pieChartInstance) pieChartInstance.destroy();
-  pieChartInstance = new Chart(ctxPie, {
-    type: 'doughnut', data: { labels:['TASKS','CAPITAL','HOURS'], datasets:[{ data:[tC, fC, hC], backgroundColor:['#00FFFF','#AA00FF','#FFF'], borderWidth:0 }] },
-    options: { plugins:{legend:{labels:{color:'#FFF', font:{family:'monospace'}}}} }
-  });
-}
-
-// ==========================================
-// 12. SETTINGS
-// ==========================================
-document.getElementById('update-alias-btn').onclick = async () => {
-  const n = document.getElementById('new-alias-input').value.trim().toLowerCase();
-  if(n.length<3) return alert("ALIAS MUST BE > 2 CHARS");
-  const newId = `${n}#${state.userId.split('#')[1]}`;
-  if(newId === state.userId) return;
-  
-  try {
-    const oldRef = doc(db,'users',state.userId);
-    const snap = await getDoc(oldRef);
-    await setDoc(doc(db,'users',newId), {...snap.data(), baseName:n});
-    await deleteDoc(oldRef);
-    localStorage.setItem('@superhuman_identity_web', newId);
-    state.userId = newId; document.getElementById('settings-user-id').innerText = newId;
-    alert("ALIAS UPDATED"); setupFirebaseListeners();
-  } catch(e) { alert("NETWORK ERROR"); }
-};
-
-document.getElementById('purge-btn').onclick = () => {
-  if(confirm("PURGE IDENTITY FROM DEVICE? (This logs you out)")) {
-    localStorage.removeItem('@superhuman_identity_web');
-    location.reload();
+  const pieEl = document.getElementById('pieChart');
+  if(pieEl) {
+    const ctxPie = pieEl.getContext('2d');
+    if(pieChartInstance) pieChartInstance.destroy();
+    pieChartInstance = new Chart(ctxPie, {
+      type: 'doughnut', data: { labels:['TASKS','CAPITAL','HOURS'], datasets:[{ data:[tC, fC, hC], backgroundColor:['#00FFFF','#AA00FF','#FFF'], borderWidth:0 }] },
+      options: { plugins:{legend:{labels:{color:'#FFF', font:{family:'monospace'}}}} }
+    });
   }
-};
-
-// ==========================================
-// 13. MODAL UTILS
-// ==========================================
-function showModal(title, html) {
-  document.getElementById('modal-overlay').classList.remove('hidden');
-  document.getElementById('modal-body').innerHTML = `
-    <div class="modal-header">
-      <h3 class="modal-title">${title}</h3>
-      <button class="icon-btn" onclick="hideModal()"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    ${html}
-  `;
 }
-window.hideModal = () => document.getElementById('modal-overlay').classList.add('hidden');
 
-// Boot
-if(state.userId) bootApp();
+// ==========================================
+// 11. MODAL UTILS
+// ==========================================
+window.showModal = function(title, html) {
+  const overlay = document.getElementById('modal-overlay');
+  const body = document.getElementById('modal-body');
+  if(overlay && body) {
+    overlay.classList.remove('hidden');
+    body.innerHTML = `
+      <div class="modal-header">
+        <h3 class="modal-title">${title}</h3>
+        <button class="icon-btn" onclick="hideModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      ${html}
+    `;
+  }
+}
+window.hideModal = () => document.getElementById('modal-overlay')?.classList.add('hidden');
 
-// Wait for the window to load to ensure all HTML elements are ready
-window.addEventListener('load', () => {
-  if (state.userId) {
+// ==========================================
+// 12. DOM LOAD & EVENT BINDINGS
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+  // Navigation
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => switchTab(e.currentTarget.dataset.tab));
+  });
+
+  // Identity Login
+  document.getElementById('init-btn')?.addEventListener('click', async () => {
+    const alias = document.getElementById('alias-input').value.trim().toLowerCase();
+    const key = document.getElementById('key-input').value.trim();
+    const err = document.getElementById('error-message');
+
+    if (alias.length < 3) return err.innerText = 'ALIAS MUST BE > 2 CHARS';
+    if (!key) return err.innerText = 'KEY REQUIRED';
+    err.innerText = 'PROCESSING...';
+
+    try {
+      let uniqueId = '', isAvailable = false;
+      while (!isAvailable) {
+        const testId = `${alias}#${generateTag()}`;
+        const docRef = doc(db, 'users', testId);
+        const snap = await getDoc(docRef);
+        if (!snap.exists()) {
+          await setDoc(docRef, { baseName: alias, tag: testId.split('#')[1], accessKey: key, createdAt: new Date().toISOString() });
+          uniqueId = testId;
+          isAvailable = true;
+        }
+      }
+      localStorage.setItem('@superhuman_identity_web', uniqueId);
+      state.userId = uniqueId;
+      bootApp();
+    } catch (e) {
+      err.innerText = e.code === 'permission-denied' ? 'ACCESS DENIED: INVALID KEY' : 'NETWORK ERROR';
+    }
+  });
+
+  // Habit Addition
+  document.querySelectorAll('.day-badge').forEach(b => {
+    b.addEventListener('click', (e) => {
+      const day = parseInt(e.target.dataset.day);
+      if(state.selectedDays.includes(day)) state.selectedDays = state.selectedDays.filter(d => d !== day);
+      else state.selectedDays.push(day);
+      e.target.classList.toggle('active');
+    });
+  });
+
+  document.getElementById('add-habit-btn')?.addEventListener('click', () => {
+    const input = document.getElementById('new-habit-input');
+    if(!input.value.trim() || state.selectedDays.length === 0) return;
+    state.habits.push({ id: Date.now().toString(), name: input.value.trim().toUpperCase(), frequency:[...state.selectedDays], history: {}, totalCompletions: 0 });
+    input.value = ''; saveLocal(); renderHabits();
+  });
+
+  // Directives Addition
+  const injectBtn = document.getElementById('inject-capital-btn');
+  if(injectBtn) injectBtn.onclick = () => {
+    const val = parseFloat(document.getElementById('inject-capital-input').value);
+    if(val>0) { state.unallocated += val; saveLocal(); updateHeaderBadge(); document.getElementById('inject-capital-input').value=''; }
+  };
+
+  const addMasterBtn = document.getElementById('add-master-directive-btn');
+  if(addMasterBtn) addMasterBtn.onclick = () => {
+    const title = prompt("MASTER PROJECT NAME:");
+    if(title) {
+      const newDir = { id: Date.now().toString(), parentId: null, title: title.toUpperCase(), type: 'TASK', target: 1, current: 0, isCompleted: false, isPinned: false, isShared: false, participants:[state.userId], createdAt: new Date().toISOString() };
+      state.localDirectives.push(newDir); saveLocal(); renderDirectives();
+    }
+  };
+
+  const backDirBtn = document.getElementById('back-to-directives');
+  if(backDirBtn) backDirBtn.onclick = () => {
+    state.viewingDirectiveId = null;
+    document.getElementById('tab-directive-detail').style.display = 'none';
+    document.getElementById('tab-directives').style.display = 'block';
+    renderDirectives();
+  };
+
+  const targetLockBtn = document.getElementById('target-lock-btn');
+  if(targetLockBtn) targetLockBtn.onclick = () => {
+    state.activeFocusDirectiveId = state.viewingDirectiveId;
+    const dir = getCombinedDirectives().find(d=>d.id===state.viewingDirectiveId);
+    document.getElementById('focus-target-badge').innerText = `TARGET LOCKED: ${dir.title}`;
+    document.getElementById('focus-target-badge').classList.add('locked');
+    switchTab('tab-focus');
+  };
+
+  const delDirBtn = document.getElementById('delete-directive-btn');
+  if(delDirBtn) delDirBtn.onclick = async () => {
+    if(!confirm("DELETE TARGET & SUB-TARGETS?")) return;
+    const id = state.viewingDirectiveId;
+    const toDel = [id];
+    const getC = (pId) => { getCombinedDirectives().filter(d=>d.parentId===pId).forEach(c=>{toDel.push(c.id); getC(c.id);}); };
+    getC(id);
+
+    const isShared = getCombinedDirectives().find(d=>d.id===id)?.isShared;
+    if(isShared) {
+      const batch = writeBatch(db);
+      toDel.forEach(dId => batch.delete(doc(db, 'shared_directives', dId)));
+      await batch.commit();
+    } else {
+      state.localDirectives = state.localDirectives.filter(d => !toDel.includes(d.id));
+      saveLocal();
+    }
+    if(state.activeFocusDirectiveId === id) { state.activeFocusDirectiveId = null; updateFocusUI(); }
+    document.getElementById('back-to-directives').click();
+  };
+
+  const showAddSubBtn = document.getElementById('show-add-sub-btn');
+  if(showAddSubBtn) showAddSubBtn.onclick = () => document.getElementById('add-sub-form').classList.remove('hidden');
+
+  const subTypeSel = document.getElementById('sub-type-select');
+  if(subTypeSel) subTypeSel.onchange = (e) => {
+    document.getElementById('sub-target-input').style.display = e.target.value === 'TASK' ? 'none' : 'block';
+  };
+
+  const confirmAddSub = document.getElementById('confirm-add-sub');
+  if(confirmAddSub) confirmAddSub.onclick = async () => {
+    const title = document.getElementById('sub-title-input').value.trim().toUpperCase();
+    const type = document.getElementById('sub-type-select').value;
+    const target = parseFloat(document.getElementById('sub-target-input').value) || 0;
+    if(!title) return;
+
+    const p = getCombinedDirectives().find(d=>d.id===state.viewingDirectiveId);
+    const newDir = { id: Date.now().toString(), parentId: p.id, title, type, target: type==='TIME'?target*60:target, current:0, isCompleted:false, isPinned:false, isShared:p.isShared, participants:p.participants, timeInvested:{[state.userId]:0}, createdAt: new Date().toISOString() };
+    if(newDir.type==='FINANCE') newDir.contributions = {[state.userId]:0};
+
+    if(p.isShared) await setDoc(doc(db, 'shared_directives', newDir.id), newDir);
+    else { state.localDirectives.push(newDir); saveLocal(); }
+    
+    document.getElementById('add-sub-form').classList.add('hidden');
+    document.getElementById('sub-title-input').value = '';
+    renderDirectiveDetail(p.id);
+  };
+
+  // Timer Presets & Controls
+  document.querySelectorAll('.preset-btn').forEach(b => {
+    b.onclick = async (e) => {
+      if(state.isActive) return;
+      document.querySelectorAll('.preset-btn').forEach(x=>x.classList.remove('active'));
+      e.target.classList.add('active');
+      const m = parseInt(e.target.dataset.mins);
+      state.initialTime = m*60; state.timeLeft = m*60;
+      if(state.isLinked && state.roomId) await updateDoc(doc(db,'focus_rooms',state.roomId), {status:'idle', duration:m*60, allocatedTime:m*60});
+      updateFocusUI();
+    }
+  });
+
+  const toggleTimerBtn = document.getElementById('toggle-timer-btn');
+  if(toggleTimerBtn) toggleTimerBtn.onclick = async () => {
+    if(state.isLinked && state.roomId) {
+      const ref = doc(db, 'focus_rooms', state.roomId);
+      if(!state.isActive) await updateDoc(ref, {status:'running', startTime:Date.now(), allocatedTime:state.timeLeft});
+      else await updateDoc(ref, {status:'paused', allocatedTime:state.timeLeft});
+    } else {
+      if(!state.isActive) startLocalTimerLoop(); else stopLocalTimerLoop();
+    }
+  };
+
+  const resetTimerBtn = document.getElementById('reset-timer-btn');
+  if(resetTimerBtn) resetTimerBtn.onclick = async () => {
+    if(state.isLinked && state.roomId) await updateDoc(doc(db,'focus_rooms',state.roomId), {status:'idle', allocatedTime:state.initialTime});
+    else { stopLocalTimerLoop(); state.timeLeft = state.initialTime; updateFocusUI(); }
+  };
+
+  // Syndicate Modals & Networking
+  const syncBtn = document.getElementById('sync-badge-btn');
+  if(syncBtn) syncBtn.onclick = () => {
+    if(state.isLinked) {
+      showModal('SYNDICATE UPLINK', `
+        <div style="text-align:center;">
+          <i class="fa-solid fa-earth-americas" style="font-size:40px; color:#00FFFF; margin-bottom:20px;"></i>
+          <p style="color:#666; font-size:12px; letter-spacing:2px;">CONNECTED TO:</p>
+          <p style="color:#00FFFF; font-size:20px; font-family:monospace; margin-bottom:30px;">${state.partnerId}</p>
+          <button id="sever-link-btn" class="dashed-btn" style="border-color:#FF3333; color:#FF3333;">SEVER CONNECTION</button>
+        </div>
+      `);
+      document.getElementById('sever-link-btn').onclick = async () => {
+        if(state.roomId) await updateDoc(doc(db,'focus_rooms',state.roomId), {status:'idle'});
+        await updateDoc(doc(db,'users',state.userId), {focusPartner:null, activeFocusRoom:null});
+        if(state.partnerId) await updateDoc(doc(db,'users',state.partnerId), {focusPartner:null, activeFocusRoom:null});
+        hideModal();
+      };
+    } else {
+      showModal('SYNDICATE UPLINK', `
+        <p style="color:#888; font-size:12px; margin-bottom:20px;">Enter partner ID to send uplink request.</p>
+        <input type="text" id="partner-request-input" placeholder="e.g. viktor#1234" style="text-align:center; margin-bottom:20px;">
+        <button id="send-request-btn" class="btn">SEND REQUEST</button>
+      `);
+      document.getElementById('send-request-btn').onclick = async () => {
+        const pId = document.getElementById('partner-request-input').value.trim();
+        if(!pId || pId===state.userId) return;
+        const snap = await getDoc(doc(db,'users',pId));
+        if(!snap.exists()) return alert("ID NOT FOUND");
+        await updateDoc(doc(db,'users',pId), {pendingFocusRequest: state.userId});
+        alert("REQUEST SENT"); hideModal();
+      };
+    }
+  };
+
+  const denyBtn = document.getElementById('deny-uplink-btn');
+  if(denyBtn) denyBtn.onclick = async () => {
+    await updateDoc(doc(db,'users',state.userId), {pendingFocusRequest:null});
+  };
+
+  const acceptBtn = document.getElementById('accept-uplink-btn');
+  if(acceptBtn) acceptBtn.onclick = async () => {
+    const newRoomId = `room_${[state.userId, state.pendingRequest].sort().join('_')}`;
+    await setDoc(doc(db,'focus_rooms',newRoomId), { participants:[state.userId, state.pendingRequest], status:'idle', duration:state.initialTime, allocatedTime:state.initialTime});
+    await updateDoc(doc(db,'users',state.userId), { focusPartner:state.pendingRequest, activeFocusRoom:newRoomId, pendingFocusRequest:null});
+    await updateDoc(doc(db,'users',state.pendingRequest), { focusPartner:state.userId, activeFocusRoom:newRoomId });
+  };
+
+  const shareBtn = document.getElementById('share-directive-btn');
+  if (shareBtn) shareBtn.onclick = async () => {
+    const pId = document.getElementById('share-id-input').value.trim();
+    if(!pId) return alert("ENTER PARTNER ID");
+    const dir = getCombinedDirectives().find(d=>d.id===state.viewingDirectiveId);
+    if(!dir) return;
+    try {
+      await setDoc(doc(db, 'shared_directives', dir.id), { ...dir, isShared:true, participants:[state.userId, pId] });
+      state.localDirectives = state.localDirectives.filter(d=>d.id !== dir.id);
+      saveLocal();
+      document.getElementById('share-id-input').value = '';
+      alert("DIRECTIVE SHARED UPLINK ESTABLISHED");
+    } catch(e) { alert("NETWORK ERROR"); }
+  };
+
+  // Settings
+  const updateAliasBtn = document.getElementById('update-alias-btn');
+  if(updateAliasBtn) updateAliasBtn.onclick = async () => {
+    const n = document.getElementById('new-alias-input').value.trim().toLowerCase();
+    if(n.length<3) return alert("ALIAS MUST BE > 2 CHARS");
+    const newId = `${n}#${state.userId.split('#')[1]}`;
+    if(newId === state.userId) return;
+    
+    try {
+      const oldRef = doc(db,'users',state.userId);
+      const snap = await getDoc(oldRef);
+      await setDoc(doc(db,'users',newId), {...snap.data(), baseName:n});
+      await deleteDoc(oldRef);
+      localStorage.setItem('@superhuman_identity_web', newId);
+      state.userId = newId; document.getElementById('settings-user-id').innerText = newId;
+      alert("ALIAS UPDATED"); setupFirebaseListeners();
+    } catch(e) { alert("NETWORK ERROR"); }
+  };
+
+  const purgeBtn = document.getElementById('purge-btn');
+  if(purgeBtn) purgeBtn.onclick = () => {
+    if(confirm("PURGE IDENTITY FROM DEVICE? (This logs you out)")) {
+      localStorage.removeItem('@superhuman_identity_web');
+      location.reload();
+    }
+  };
+
+  // INITIALIZE
+  if(state.userId) {
     bootApp();
   } else {
-    // Ensure the button exists before adding the listener
-    const btn = document.getElementById('init-btn');
-    if (btn) {
-      btn.addEventListener('click', handleInitialize);
-    }
+    const identityScreen = document.getElementById('identity-screen');
+    const mainApp = document.getElementById('main-app');
+    if (identityScreen) identityScreen.classList.remove('hidden');
+    if (mainApp) mainApp.classList.add('hidden');
   }
 });
