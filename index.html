@@ -2,12 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>PROTOCOL WEB</title>
   <link rel="stylesheet" href="style.css">
-  <!-- FontAwesome for Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Chart.js for Analytics -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -16,19 +14,27 @@
   <div id="identity-screen" class="screen">
     <h1 class="title">SYSTEM_INIT</h1>
     <p class="subtitle">ESTABLISH YOUR SYNDICATE ALIAS</p>
-    <div class="input-group"><input type="text" id="alias-input" placeholder="ENTER ALIAS" maxlength="12" autocomplete="off"></div>
-    <div class="input-group"><input type="password" id="key-input" placeholder="AUTHORIZATION KEY" autocomplete="off"></div>
+    
+    <div class="input-group">
+      <input type="text" id="alias-input" placeholder="ENTER ALIAS (e.g. viktor)" maxlength="12" autocomplete="off" style="text-align: center; font-size: 24px;">
+    </div>
+    
+    <div class="input-group">
+      <input type="password" id="key-input" placeholder="AUTHORIZATION KEY" autocomplete="off" style="text-align: center; font-size: 16px; letter-spacing: 4px;">
+    </div>
+    
     <p id="error-message" class="error-text"></p>
-    <button id="init-btn" class="btn">INITIALIZE</button>
+    
+    <button id="init-btn" class="btn" style="padding: 20px; margin-top: 10px;">INITIALIZE</button>
   </div>
 
   <!-- MAIN APP CONTAINER -->
-  <div id="main-app" class="screen hidden" style="padding: 0; max-width: 100%; height: 100vh;">
+  <div id="main-app" class="screen hidden">
     
     <!-- TOP HEADER -->
     <header class="top-header">
       <h1 class="header-title" id="screen-title">PROTOCOL</h1>
-      <div class="header-badge" id="header-badge"></div>
+      <div class="header-badge" id="header-badge">0 DAY STREAK</div>
     </header>
 
     <!-- CONTENT AREA -->
@@ -37,11 +43,15 @@
       <!-- HABITS TAB -->
       <div id="tab-habits" class="tab-content active-tab">
         <div id="habits-list" class="list-container"></div>
+        
         <div class="add-area">
           <div class="days-row" id="days-selector">
-            <div class="day-badge active" data-day="0">S</div><div class="day-badge active" data-day="1">M</div>
-            <div class="day-badge active" data-day="2">T</div><div class="day-badge active" data-day="3">W</div>
-            <div class="day-badge active" data-day="4">T</div><div class="day-badge active" data-day="5">F</div>
+            <div class="day-badge active" data-day="0">S</div>
+            <div class="day-badge active" data-day="1">M</div>
+            <div class="day-badge active" data-day="2">T</div>
+            <div class="day-badge active" data-day="3">W</div>
+            <div class="day-badge active" data-day="4">T</div>
+            <div class="day-badge active" data-day="5">F</div>
             <div class="day-badge active" data-day="6">S</div>
           </div>
           <div class="input-row">
@@ -57,57 +67,78 @@
           <input type="number" id="inject-capital-input" placeholder="INJECT CAPITAL...">
           <button id="inject-capital-btn" class="action-btn"><i class="fa-solid fa-plus"></i></button>
         </div>
+        
         <div id="directives-grid" class="directives-grid"></div>
+        
         <button id="add-master-directive-btn" class="dashed-btn">+ ESTABLISH MASTER DIRECTIVE</button>
       </div>
 
-      <!-- DIRECTIVE DETAIL VIEW (Nested) -->
+      <!-- DIRECTIVE DETAIL VIEW -->
       <div id="tab-directive-detail" class="tab-content">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
           <button id="back-to-directives" class="icon-btn"><i class="fa-solid fa-arrow-left"></i></button>
           <button id="delete-directive-btn" class="icon-btn" style="color: #FF3333;"><i class="fa-solid fa-trash"></i></button>
         </div>
+        
         <div id="detail-stats" style="display:flex; justify-content:center; margin-bottom: 20px;"></div>
-        <button id="target-lock-btn" class="dashed-btn" style="border-style: solid;"><i class="fa-solid fa-crosshairs"></i> TARGET LOCK: DEEP WORK</button>
+        
+        <button id="target-lock-btn" class="dashed-btn" style="border-style: solid; background: #050505; border-color: #222;">
+          <i class="fa-solid fa-crosshairs" style="margin-right: 8px;"></i> TARGET LOCK: DEEP WORK
+        </button>
+        
         <div id="share-directive-box" class="inject-row" style="display: none;">
           <input type="text" id="share-id-input" placeholder="PARTNER ID...">
           <button id="share-directive-btn" class="action-btn" style="background: #AA00FF;"><i class="fa-solid fa-network-wired"></i></button>
         </div>
+        
         <h3 class="section-label">SUB-DIRECTIVES</h3>
         <div id="sub-directives-list" class="list-container"></div>
-        <div id="add-sub-form" class="hidden" style="border: 1px solid #333; padding: 15px; margin-bottom: 20px;">
-          <select id="sub-type-select" style="width:100%; background:#000; color:#00FFFF; padding:10px; border:1px solid #333; margin-bottom:10px; font-family:monospace;">
+        
+        <div id="add-sub-form" class="hidden" style="border: 1px solid #333; padding: 15px; margin-bottom: 20px; background: #050505;">
+          <select id="sub-type-select" style="width:100%; background:#000; color:#00FFFF; padding:10px; border:1px solid #333; margin-bottom:15px; font-family:monospace;">
             <option value="TASK">TASK</option>
             <option value="FINANCE">CAPITAL</option>
             <option value="TIME">HOURS</option>
           </select>
-          <input type="text" id="sub-title-input" placeholder="NAME..." style="margin-bottom:10px;">
-          <input type="number" id="sub-target-input" placeholder="TARGET AMOUNT/HOURS..." style="margin-bottom:10px; display:none;">
-          <button id="confirm-add-sub" class="btn" style="padding: 10px; width:100%;">ESTABLISH</button>
+          <input type="text" id="sub-title-input" placeholder="NAME..." style="margin-bottom:15px;">
+          <input type="number" id="sub-target-input" placeholder="TARGET AMOUNT/HOURS..." style="margin-bottom:15px; display:none;">
+          
+          <div style="display: flex; justify-content: flex-end;">
+            <button id="confirm-add-sub" class="btn" style="width: auto; padding: 10px 15px;">ESTABLISH</button>
+          </div>
         </div>
         <button id="show-add-sub-btn" class="dashed-btn">+ ESTABLISH SUB-DIRECTIVE</button>
       </div>
 
       <!-- FOCUS TAB -->
       <div id="tab-focus" class="tab-content" style="text-align: center;">
-        <div id="focus-target-badge" class="target-badge">[ NO TARGET LOCKED - FREE INSTANCE ]</div>
-        <div class="timer-container">
+        <div id="focus-target-badge" class="target-badge">
+          <i class="fa-solid fa-crosshairs"></i> <span id="focus-target-text">[ NO TARGET LOCKED - FREE INSTANCE ]</span>
+        </div>
+        
+        <div class="timer-container" style="margin-bottom: 30px;">
           <h1 id="timer-display" class="timer-text">25:00</h1>
           <p id="timer-status" class="status-text">SYSTEM IDLE</p>
-          <button id="sync-badge-btn" class="sync-badge"><i class="fa-solid fa-link"></i> <span id="sync-text">SOLO INSTANCE</span></button>
+          
+          <button id="sync-badge-btn" class="sync-badge">
+            <i class="fa-solid fa-link"></i> <span id="sync-text">SOLO INSTANCE</span>
+          </button>
         </div>
+        
         <div class="timer-controls">
           <div class="presets" id="timer-presets">
             <button class="preset-btn active" data-mins="25">25</button>
             <button class="preset-btn" data-mins="45">45</button>
             <button class="preset-btn" data-mins="90">90</button>
           </div>
-          <div style="display: flex; justify-content: center; gap: 20px; align-items: center;">
+          
+          <div style="display: flex; justify-content: center; align-items: center; gap: 20px;">
             <button id="toggle-timer-btn" class="play-btn"><i class="fa-solid fa-play"></i></button>
             <button id="reset-timer-btn" class="reset-btn"><i class="fa-solid fa-rotate-right"></i></button>
           </div>
         </div>
-        <h3 class="section-label" style="text-align: left; margin-top: 30px;">RECENT SESSIONS</h3>
+        
+        <h3 class="section-label" style="text-align: left; margin-top: 40px; border-top: 1px solid #222; padding-top: 20px;">RECENT SESSIONS</h3>
         <div id="focus-history-list" class="list-container"></div>
       </div>
 
@@ -117,23 +148,35 @@
           <div class="vital-box"><span>GLOBAL STREAK</span><h2 id="stat-streak">0</h2></div>
           <div class="vital-box"><span>DEEP WORK</span><h2 id="stat-focus" style="color:#AA00FF;">0H 0M</h2></div>
         </div>
-        <h3 class="section-label">7-DAY DEEP WORK TREND</h3>
-        <canvas id="trendChart" height="200"></canvas>
-        <h3 class="section-label" style="margin-top: 30px;">DIRECTIVE ALLOCATION</h3>
+        
+        <h3 class="section-label"><i class="fa-solid fa-pulse" style="color:#00FFFF; margin-right: 8px;"></i> 7-DAY DEEP WORK TREND</h3>
+        <div style="margin-bottom: 40px; border-bottom: 1px solid #222; padding-bottom: 20px;">
+          <canvas id="trendChart" height="200"></canvas>
+        </div>
+        
+        <h3 class="section-label"><i class="fa-solid fa-chart-pie" style="color:#00FFFF; margin-right: 8px;"></i> DIRECTIVE ALLOCATION</h3>
         <canvas id="pieChart" height="200"></canvas>
       </div>
 
       <!-- SETTINGS TAB -->
       <div id="tab-settings" class="tab-content">
         <h3 class="section-label">CORE SYNDICATE ID</h3>
-        <div class="id-box" id="settings-user-id">LOADING...</div>
-        <h3 class="section-label" style="margin-top: 30px;">UPDATE PUBLIC ALIAS</h3>
-        <div class="input-row">
+        <div class="id-box">
+          <i class="fa-solid fa-fingerprint"></i>
+          <span id="settings-user-id">LOADING...</span>
+        </div>
+        <p style="color: #444; font-size: 10px; margin-bottom: 40px; border-bottom: 1px solid #222; padding-bottom: 30px;">This is your permanent network identifier.</p>
+        
+        <h3 class="section-label">UPDATE PUBLIC ALIAS</h3>
+        <div class="input-row" style="margin-bottom: 40px; border-bottom: 1px solid #222; padding-bottom: 30px;">
           <input type="text" id="new-alias-input" placeholder="NEW ALIAS..." maxlength="12">
           <button id="update-alias-btn" class="action-btn"><i class="fa-solid fa-check"></i></button>
         </div>
-        <h3 class="section-label" style="margin-top: 50px; color:#FF3333;">DANGER ZONE</h3>
-        <button id="purge-btn" class="dashed-btn" style="border-color: #FF3333; color: #FF3333;">PURGE IDENTITY FROM DEVICE</button>
+        
+        <h3 class="section-label" style="color:#FF3333;">DANGER ZONE</h3>
+        <button id="purge-btn" class="dashed-btn danger-zone">
+          <i class="fa-solid fa-skull" style="margin-right: 10px;"></i> PURGE IDENTITY FROM DEVICE
+        </button>
       </div>
 
     </div>
@@ -148,20 +191,21 @@
     </nav>
   </div>
 
-  <!-- MODALS -->
+  <!-- GENERIC MODAL OVERLAY -->
   <div id="modal-overlay" class="modal-overlay hidden">
     <div class="modal-content" id="modal-body"></div>
   </div>
 
   <!-- UPLINK REQUEST POPUP -->
   <div id="uplink-popup" class="modal-overlay hidden">
-    <div class="modal-content" style="text-align: center; border-color: #00FFFF;">
+    <div class="modal-content" style="text-align: center; border-color: #00FFFF; background: #0a0a0a;">
       <i class="fa-solid fa-triangle-exclamation" style="color: #00FFFF; font-size: 30px; margin-bottom: 10px;"></i>
-      <h3 style="color: #00FFFF; margin-bottom: 10px;">UPLINK REQUEST</h3>
-      <p id="uplink-request-text" style="color: #888; margin-bottom: 20px;"></p>
-      <div style="display: flex; gap: 10px;">
+      <h3 style="color: #00FFFF; margin-bottom: 10px; font-weight: bold; letter-spacing: 2px;">UPLINK REQUEST</h3>
+      <p id="uplink-request-text" style="color: #888; margin-bottom: 30px; line-height: 1.5;"></p>
+      
+      <div style="display: flex; gap: 15px;">
         <button id="deny-uplink-btn" class="btn" style="flex:1; background: transparent; border: 1px solid #FF3333; color: #FF3333;">DENY</button>
-        <button id="accept-uplink-btn" class="btn" style="flex:1;">AUTHORIZE</button>
+        <button id="accept-uplink-btn" class="btn" style="flex:1; background: rgba(0, 255, 255, 0.1); border: 1px solid #00FFFF; color: #00FFFF;">AUTHORIZE</button>
       </div>
     </div>
   </div>
