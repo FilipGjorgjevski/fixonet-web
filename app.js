@@ -815,3 +815,16 @@ window.hideModal = () => document.getElementById('modal-overlay').classList.add(
 
 // Boot
 if(state.userId) bootApp();
+
+// Wait for the window to load to ensure all HTML elements are ready
+window.addEventListener('load', () => {
+  if (state.userId) {
+    bootApp();
+  } else {
+    // Ensure the button exists before adding the listener
+    const btn = document.getElementById('init-btn');
+    if (btn) {
+      btn.addEventListener('click', handleInitialize);
+    }
+  }
+});
