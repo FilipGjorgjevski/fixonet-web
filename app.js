@@ -15,7 +15,17 @@ const db = getFirestore(app);
 // ==========================================
 // 2. GLOBAL STATE (Context Equivalents)
 // ==========================================
+// 2. DOM ELEMENTS (Ensure these exist in index.html)
+// ==========================================
+const identityScreen = document.getElementById('identity-screen');
+const mainApp = document.getElementById('main-app'); // Renamed from dashboard-screen
+const aliasInput = document.getElementById('alias-input');
+const keyInput = document.getElementById('key-input');
+const initBtn = document.getElementById('init-btn');
+const errorText = document.getElementById('error-message');
+// ==========================================
 const state = {
+  
   userId: localStorage.getItem('@superhuman_identity_web'),
   unallocated: parseFloat(localStorage.getItem('@superhuman_unallocated')) || 0,
   habits: JSON.parse(localStorage.getItem('@superhuman_habits_pure')) ||[],
@@ -119,16 +129,25 @@ function setupRoomListener(roomId) {
 // ==========================================
 // 5. CORE INITIALIZATION
 // ==========================================
+
 function bootApp() {
   if (state.userId) {
-    document.getElementById('identity-screen').classList.add('hidden');
-    document.getElementById('main-app').classList.remove('hidden');
-    document.getElementById('settings-user-id').innerText = state.userId;
-    setupFirebaseListeners();
-    renderAll();
+    // Safety check to prevent the "Cannot read properties of null" error
+    if (identityScreen && mainApp) {
+      identityScreen.classList.add('hidden');
+      mainApp.classList.remove('hidden');
+      
+      const settingsId = document.getElementById('settings-user-id');
+      if (settingsId) settingsId.innerText = state.userId;
+      
+      setupFirebaseListeners();
+      renderAll();
+    }
   } else {
-    document.getElementById('identity-screen').classList.remove('hidden');
-    document.getElementById('main-app').classList.add('hidden');
+    if (identityScreen && mainApp) {
+      identityScreen.classList.remove('hidden');
+      mainApp.classList.add('hidden');
+    }
   }
 }
 
